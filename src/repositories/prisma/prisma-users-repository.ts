@@ -5,7 +5,7 @@ import { UsersRepository } from '../users-repository'
 
 export class PrimasUsersRepository implements UsersRepository {
   async findById(id: string) {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         id,
       },
