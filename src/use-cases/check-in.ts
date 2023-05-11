@@ -1,6 +1,5 @@
 import { CheckIn } from '@prisma/client'
 import { CheckInsRepository } from '@/repositories/check-ins-repository'
-import { InvalidCredentialsError } from '@/use-cases/errors/invalid-credentials-error'
 
 interface CheckInUseCaseRequest {
   user_id: string
@@ -18,14 +17,19 @@ export class CheckInUseCase {
     user_id,
     gym_id,
   }: CheckInUseCaseRequest): Promise<CheckInUseCaseResponse> {
+    const CheckInOnSameDay = await this.checkInsRepository.findByUserIdOnDate(
+      user_id,
+      new Date(),
+    )
+
+    if (CheckInOnSameDay) {
+      throw new Error()
+    }
+
     const checkIn = await this.checkInsRepository.create({
       user_id,
       gym_id,
     })
-
-    if (!checkIn) {
-      throw new InvalidCredentialsError()
-    }
 
     return {
       checkIn,
