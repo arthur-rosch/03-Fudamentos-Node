@@ -1,11 +1,12 @@
 import { CheckIn } from '@prisma/client'
 import { GymsRepository } from '@/repositories/gyms-repository'
 import { CheckInsRepository } from '@/repositories/check-ins-repository'
-import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
+import { getDistanceBetweenCoordinates } from '@/utils/get-Distance-Between-Coordinates'
 
 interface CheckInUseCaseRequest {
-  user_id: string
-  gym_id: string
+  userId: string
+  gymId: string
   userLatitude: number
   userLongitude: number
 }
@@ -17,31 +18,47 @@ interface CheckInUseCaseResponse {
 export class CheckInUseCase {
   constructor(
     private checkInsRepository: CheckInsRepository,
-    private gymsInsRepository: GymsRepository,
+    private gymsRepository: GymsRepository,
   ) {}
 
   async execute({
-    user_id,
-    gym_id,
+    userId,
+    gymId,
+    userLatitude,
+    userLongitude,
   }: CheckInUseCaseRequest): Promise<CheckInUseCaseResponse> {
-    const gym = await this.gymsInsRepository.findById(gym_id)
+    const gym = await this.gymsRepository.findById(gymId)
 
     if (!gym) {
       throw new ResourceNotFoundError()
     }
 
-    const CheckInOnSameDay = await this.checkInsRepository.findByUserIdOnDate(
-      user_id,
+    const distance = getDistanceBetweenCoordinates(
+      { latitude: userLatitude, longitude: userLongitude },
+      {
+        latitude: gym.latitude.toNumber(),
+        longitude: gym.longitude.toNumber(),
+      },
+    )
+
+    const MAX_DISTANCE_IN_KILOMETERS = 0.1
+
+    if (distance > MAX_DISTANCE_IN_KILOMETERS) {
+      throw new Error()
+    }
+
+    const checkInOnSameDay = await this.checkInsRepository.findByUserIdOnDate(
+      userId,
       new Date(),
     )
 
-    if (CheckInOnSameDay) {
+    if (checkInOnSameDay) {
       throw new Error()
     }
 
     const checkIn = await this.checkInsRepository.create({
-      user_id,
-      gym_id,
+      gym_id: gymId,
+      user_id: userId,
     })
 
     return {
