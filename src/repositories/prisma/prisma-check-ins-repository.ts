@@ -25,7 +25,7 @@ export class PrimasCheckInsRepository implements CheckInsRepository {
     return CheckIn
   }
 
-  async findManyByUserId(userId: string, page: number): Promise<CheckIn[]> {
+  async findManyByUserId(userId: string, page: number) {
     const checkIns = await prisma.checkIn.findMany({
       where: {
         user_id: userId,
@@ -37,7 +37,7 @@ export class PrimasCheckInsRepository implements CheckInsRepository {
     return checkIns
   }
 
-  async findById(id: string): Promise<CheckIn | null> {
+  async findById(id: string) {
     const checkIn = await prisma.checkIn.findFirst({
       where: {
         id,
@@ -47,7 +47,7 @@ export class PrimasCheckInsRepository implements CheckInsRepository {
     return checkIn
   }
 
-  async countByUserId(userId: string): Promise<number> {
+  async countByUserId(userId: string) {
     const count = await prisma.checkIn.count({
       where: {
         user_id: userId,
@@ -57,7 +57,7 @@ export class PrimasCheckInsRepository implements CheckInsRepository {
     return count
   }
 
-  async create(data: Prisma.CheckInUncheckedCreateInput): Promise<CheckIn> {
+  async create(data: Prisma.CheckInUncheckedCreateInput) {
     const checkIn = prisma.checkIn.create({
       data,
     })
@@ -65,7 +65,7 @@ export class PrimasCheckInsRepository implements CheckInsRepository {
     return checkIn
   }
 
-  async save(data: CheckIn): Promise<CheckIn> {
+  async save(data: CheckIn) {
     const CheckIn = prisma.checkIn.update({
       where: {
         id: data.id,
