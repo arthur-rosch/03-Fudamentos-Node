@@ -1,13 +1,12 @@
 import { Gym } from '@prisma/client'
-import { Decimal } from '@prisma/client/runtime'
 import { GymsRepository } from '@/repositories/gyms-repository'
 
 interface RegisterGymCaseRequest {
   title: string
   discription: string | null
   phone: string | null
-  latitude: Decimal
-  longitude: Decimal
+  latitude: number
+  longitude: number
 }
 
 interface RegisterGymCaseResponse {
