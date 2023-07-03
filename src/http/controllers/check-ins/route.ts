@@ -8,7 +8,7 @@ import { verifyJwt } from '@/http/middlewares/verify-jwt'
 export async function checkInsRoutes(app: FastifyInstance) {
   app.addHook('onRequest', verifyJwt)
 
-  app.get('/check-ins/history', history)
+  app.post('/check-ins/history', history)
   app.get('/check-ins/metrics', metrics)
 
   app.post('/gyms/:gymId/check-ins', checkIn)
